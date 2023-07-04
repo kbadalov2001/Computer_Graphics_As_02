@@ -119,39 +119,38 @@ function handleKeyDown(event) {
       at = view.at;
       up = view.up;
     } else if (key === 'D') {
-      rotateCameraClockwise(5); // Rotate the camera clockwise by 5 degrees
+      rotateCamera(0.1); // Rotate the camera clockwise by 1 radian
     } else if (key === 'A') {
-      rotateCameraCounterClockwise(-5); // Rotate the camera counter-clockwise by 5 degrees
+      rotateCamera(-0.1); // Rotate the camera counter-clockwise by 1 radian
     }
   
     render();
   }
-  
+
   function rotateCamera(theta) {
-    const rotationMatrix = mat4();
-    mat4.rotateY(rotationMatrix, rotationMatrix, theta);
+    const cos_t = Math.cos(theta);
+    const sin_t = Math.sin(theta);
   
-    const eyeVector = vec4(eye[0], eye[1], eye[2], 1.0);
-    const transformedEye = vec4();
-    vec4.transformMat4(transformedEye, eyeVector, rotationMatrix);
+    let new_up;
+    if (eye[0] === 0 && eye[1] === 1 && eye[2] === 0) {
+      new_up = [sin_t * up[2] + cos_t * up[0], up[1], cos_t * up[2] - sin_t * up[0]];
+    } else if (eye[0] === -1 && eye[1] === 0 && eye[2] === 0) {
+      new_up = [up[0], sin_t * up[2] + cos_t * up[1], cos_t * up[2] - sin_t * up[1]];
+    } else {
+      new_up = [cos_t * up[0] - sin_t * up[1], sin_t * up[0] + cos_t * up[1], up[2]];
+    }
   
-    eye[0] = transformedEye[0];
-    eye[1] = transformedEye[1];
-    eye[2] = transformedEye[2];
-  
-    const upVector = vec4(up[0], up[1], up[2], 0.0);
-    const transformedUp = vec4();
-    vec4.transformMat4(transformedUp, upVector, rotationMatrix);
-  
-    up[0] = transformedUp[0];
-    up[1] = transformedUp[1];
-    up[2] = transformedUp[2];
-  
-    let mvm = lookAt(eye, at, up);
+    up = new_up;
+    const mvm = lookAt(eye, at, up);
     gl.uniformMatrix4fv(modelViewMatrix, false, flatten(mvm));
   
     render();
   }
+  
+  
+  
+  
+  
   
   
   
