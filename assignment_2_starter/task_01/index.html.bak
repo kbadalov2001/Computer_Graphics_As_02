@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html>
 <head>
     <script type="notjs" id="vertex-shader">
         attribute vec4 vPosition;
